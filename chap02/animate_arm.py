@@ -1,9 +1,13 @@
 # 3rd-party
+import os
+import sys
+
 import numpy as np
 
 # local (controlbook)
-from case_studies import common, A_arm
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
+from case_studies import A_arm, common
 
 # initialize signals for generating data
 theta_gen = common.SignalGenerator(amplitude=np.pi, frequency=0.1)
