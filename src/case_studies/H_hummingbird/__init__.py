@@ -1,6 +1,6 @@
 from . import params
 from .animator import HummingbirdAnimator as Animator
-# from .dynamics_h3 import HummingbirdDynamics_h3 as Dynamics_h3
+from .dynamics_h3 import HummingbirdDynamics_h3 as Dynamics_h3
 # from .dynamics import HummingbirdDynamics as Dynamics
 from .visualizer import HummingbirdVisualizer as Visualizer
 
@@ -16,7 +16,7 @@ from .visualizer import HummingbirdVisualizer as Visualizer
 
 __all__ = [
     "Animator",
-    # "Dynamics_h3",
+    "Dynamics_h3",
     # "Dynamics",
     "Visualizer",
     "params",
