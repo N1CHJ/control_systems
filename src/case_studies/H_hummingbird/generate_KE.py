@@ -14,7 +14,9 @@ import sympy as sp
 
 # local (controlbook)
 # these functions are defined in our helper functions file in the public repository
-from case_studies.common.sym_utils import rotx, roty, rotz, calc_omega, find_coeffs, enable_printing, dynamicsymbols, printeq
+from case_studies.common.sym_utils import (calc_omega, dynamicsymbols,
+                                           enable_printing, find_coeffs,
+                                           printeq, rotx, roty, rotz)
 
 # This makes it so printing from su only happens when running this file directly
 enable_printing(__name__ == "__main__")
@@ -26,7 +28,33 @@ enable_printing(__name__ == "__main__")
 # Defining necessary symbols and variables to use in the calculations e.g. t, ell_1, m1, J1x, phi, theta, psi, etc.
 # TODO define all necessary symbols
 
+# BEGIN SOLUTION
+t = sp.symbols("t")
+
+# Physical parameters
+m1, m2, m3 = sp.symbols("m_1 m_2 m_3")
+ell_1, ell_2, ell_3x, ell_3y, ell_3z = sp.symbols("ell_1 ell_2 ell_3x ell_3y ell_3z")
+J1x, J1y, J1z = sp.symbols("J_1x J_1y J_1z")
+J2x, J2y, J2z = sp.symbols("J_2x J_2y J_2z")
+J3x, J3y, J3z = sp.symbols("J_3x J_3y J_3z")
+# END SOLUTION
+
 # TODO Define time-varying symbols for generalized coordinates and their derivatives
+
+# BEGIN SOLUTION
+phi, theta, psi = dynamicsymbols("phi theta psi")
+
+q = sp.Matrix([phi, theta, psi])
+qdot = q.diff(t)
+
+# Convenience aliases for derivatives
+phidot = phi.diff(t)
+thetadot = theta.diff(t)
+psidot = psi.diff(t)
+phiddot = phi.diff(t, 2)
+thetaddot = theta.diff(t, 2)
+psiddot = psi.diff(t, 2)
+# END SOLUTION
 
 
 
@@ -45,6 +73,28 @@ enable_printing(__name__ == "__main__")
 # p3_in_1 =
 # p3_in_w =
 
+# BEGIN SOLUTION
+# Rotation matrices (body-to-world):
+#   Body 1 (motor arm): yaw → pitch → roll
+#   Body 2 (counterweight): yaw → pitch (no roll — rigidly on arm)
+#   Body 3 (yaw base): yaw only
+R1 = rotz(psi) @ roty(theta) @ rotx(phi)
+R2 = rotz(psi) @ roty(theta)
+R3 = rotz(psi)
+
+# Body 1 COM at [ell_1, 0, 0] in body frame (on roll axis, so φ cancels)
+p1_in_b = sp.Matrix([ell_1, 0, 0])
+p1_in_w = R1 @ p1_in_b
+
+# Body 2 COM at [ell_2, 0, 0] in pitch frame
+p2_in_2 = sp.Matrix([ell_2, 0, 0])
+p2_in_w = R2 @ p2_in_2
+
+# Body 3 COM at [ell_3x, ell_3y, ell_3z] in yaw frame
+p3_in_1 = sp.Matrix([ell_3x, ell_3y, ell_3z])
+p3_in_w = R3 @ p3_in_1
+# END SOLUTION
+
 
 # %%
 # TODO: take the time derivative of the position vectors to get the linear velocity,
@@ -59,13 +109,24 @@ enable_printing(__name__ == "__main__")
 # v3_in_w =
 # V3 =
 
-# printeq("v_1", v1_in_w)
-# printeq("v_2", v2_in_w)
-# printeq("v_3", v3_in_w)
+# BEGIN SOLUTION
+v1_in_w = p1_in_w.diff(t)
+V1 = find_coeffs(v1_in_w, qdot)
 
-# printeq("V_1", V1)
-# printeq("V_2", V2)
-# printeq("V_3", V3)
+v2_in_w = p2_in_w.diff(t)
+V2 = find_coeffs(v2_in_w, qdot)
+
+v3_in_w = p3_in_w.diff(t)
+V3 = find_coeffs(v3_in_w, qdot)
+# END SOLUTION
+
+printeq("v_1", v1_in_w)
+printeq("v_2", v2_in_w)
+printeq("v_3", v3_in_w)
+
+printeq("V_1", V1)
+printeq("V_2", V2)
+printeq("V_3", V3)
 
 
 
@@ -76,42 +137,52 @@ enable_printing(__name__ == "__main__")
 # R2 =  #rotation to body 2
 # R3 =  #rotation to body 3
 
+# NOTE: R1, R2, R3 already defined above with the position vectors:
+#   R1 = rotz(psi) @ roty(theta) @ rotx(phi)  (body 1: yaw·pitch·roll)
+#   R2 = rotz(psi) @ roty(theta)               (body 2: yaw·pitch)
+#   R3 = rotz(psi)                              (body 3: yaw)
 
 
 # we can use the rotation matrices to calculate the angular velocity of each rigid body
 # TODO use the "calc_omega" function to calculate the angular velocity of each rigid body
 
-# omega_1 =
-# omega_2 =
-# omega_3 =
+# BEGIN SOLUTION
+omega_1 = calc_omega(R1)
+omega_2 = calc_omega(R2)
+omega_3 = calc_omega(R3)
 
 # Simplify the angular velocities
-# omega_1 = sp.simplify(omega_1)
-# omega_2 = sp.simplify(omega_2)
-# omega_3 = sp.simplify(omega_3)
-
+omega_1 = sp.simplify(omega_1)
+omega_2 = sp.simplify(omega_2)
+omega_3 = sp.simplify(omega_3)
+# END SOLUTION
 
 # TODO use the "find_coeffs" function to calculate the "W_i" matrices
-# W1 =
-# W2 =
-# W3 =
 
-# printeq("omega_1", omega_1)
-# printeq("omega_2", omega_2)
-# printeq("omega_3", omega_3)
+# BEGIN SOLUTION
+W1 = find_coeffs(omega_1, qdot)
+W2 = find_coeffs(omega_2, qdot)
+W3 = find_coeffs(omega_3, qdot)
+# END SOLUTION
 
-# printeq("W_1", W1)
-# printeq("W_2", W2)
-# printeq("W_3", W3)
+printeq("omega_1", omega_1)
+printeq("omega_2", omega_2)
+printeq("omega_3", omega_3)
+
+printeq("W_1", W1)
+printeq("W_2", W2)
+printeq("W_3", W3)
 
 # %% [markdown]
 # ### Inertia Tensor Terms
 # %%
 # TODO: create the diagonal inertia tensors for each rigid body using inertia symbols
 
-# J1 = 
-# J2 = 
-# J3 = 
+# BEGIN SOLUTION
+J1 = sp.diag(J1x, J1y, J1z)
+J2 = sp.diag(J2x, J2y, J2z)
+J3 = sp.diag(J3x, J3y, J3z)
+# END SOLUTION
 
 
 # %% [markdown]
@@ -119,7 +190,13 @@ enable_printing(__name__ == "__main__")
 # %%
 # TODO: calculate M using the masses and the V, W, R, and J matrices
 M = sp.zeros(3, 3)
-# M = M +
+
+# BEGIN SOLUTION
+# M = sum_i( m_i * V_i^T V_i + W_i^T R_i J_i R_i^T W_i )
+M = (m1 * V1.T @ V1 + W1.T @ R1 @ J1 @ R1.T @ W1
+   + m2 * V2.T @ V2 + W2.T @ R2 @ J2 @ R2.T @ W2
+   + m3 * V3.T @ V3 + W3.T @ R3 @ J3 @ R3.T @ W3)
+# END SOLUTION
 
 
 

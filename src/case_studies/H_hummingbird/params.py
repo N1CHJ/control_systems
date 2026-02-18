@@ -63,3 +63,28 @@ ellT = lT
 unmixer = np.array([[1.0, 1.0], [d, -d]])  # [F, tau] = unmixer @ [fl, fr]
 mixer = np.linalg.inv(unmixer)  # [fl, fr] = mixer @ [F, tau]
 
+# Motor constant: maps PWM duty cycle [0,1] to force
+# Derived from equilibrium: Fe = km*(ul_e + ur_e), solving for km
+km = g * (m1 * l1 + m2 * l2) / lT
+
+# Equilibrium values
+F_e = (m1 * l1 + m2 * l2) * g / lT  # equilibrium total force
+tau_e = 0.0  # equilibrium torque
+theta_e = 0.0
+phi_e = 0.0
+psi_e = 0.0
+
+# Equilibrium PWM (each motor produces half the equilibrium force)
+u_e = F_e / (2.0 * km)  # equilibrium PWM per motor
+
+# Linearized longitudinal dynamics: theta_ddot = b_theta * F_ctrl  (Eqn 4.3-4.4)
+Jy_eff = m1 * l1**2 + m2 * l2**2 + J1y + J2y
+b_theta = lT / Jy_eff
+
+# Linearized lateral dynamics (Eqns 4.7-4.8)
+# phi_ddot = (1/J1x) * tau_tilde
+# psi_ddot = (F_e * lT / J_psi) * phi_tilde
+J_psi = J1z + J2z + J3z + l1**2 * m1 + l2**2 * m2 + l3x**2 * m3 + l3y**2 * m3
+b_phi = 1.0 / J1x
+a_psi = F_e * lT / J_psi
+

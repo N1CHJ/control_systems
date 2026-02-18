@@ -6,9 +6,13 @@ Import errors are gracefully handled for not-yet-released components.
 """
 
 from . import params
+
 # Core components (always available for animation/visualization)
-from .animator import HummingbirdAnimator as Animator
-from .visualizer import HummingbirdVisualizer as Visualizer
+try:
+    from .animator import HummingbirdAnimator as Animator
+    from .visualizer import HummingbirdVisualizer as Visualizer
+except ImportError:
+    pass
 
 __all__ = ["Animator", "Visualizer", "params"]
 
@@ -24,6 +28,13 @@ except ImportError:
 try:
     from .dynamics import HummingbirdDynamics as Dynamics
     __all__.append("Dynamics")
+except ImportError:
+    pass
+
+try:
+    from .ctrlEquilibrium import \
+        HummingbirdControllerEquilibrium as ControllerEquilibrium
+    __all__.append("ControllerEquilibrium")
 except ImportError:
     pass
 

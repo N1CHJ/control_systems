@@ -13,10 +13,6 @@
 # package, but in this case we are essentially extending the previous lab file...
 # they would normally be in the same file, but we are breaking them up to have
 # one file per lab assignment.
-import os
-import sys
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 from case_studies.H_hummingbird.generate_state_variable_form import *
 
 # This makes it so printing from su only happens when running this file directly
