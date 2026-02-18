@@ -2,9 +2,14 @@
 # against expected outputs for a variety of test cases. It also expects that the inputs
 # are forces from the two motors (f_l, f_r) in Newtons. Later we will change that model,
 # but we expect to check our dynamics after lab H.3. 
+import os
+import sys
 
 import numpy as np
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from case_studies.H_hummingbird.dynamics import HummingbirdDynamics
+
 # x = [phi, theta, psi, phidot, thetadot, psidot]
 x_tests = np.array([
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],

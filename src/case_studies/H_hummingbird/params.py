@@ -1,70 +1,65 @@
-# Simulation parameters
-t_start = 0.0  # Start time of simulation
-t_end = 20.0   # End time of simulation
-ts = 0.01       # Sampling time (seconds) - Faster for simulation
+import numpy as np
 
 # Physical Parameters
-g = 9.81        # Gravity (m/s^2)
+g = 9.81  # m/s^2
 
-# Geometry
-l1 = 0.3        # Distance to body (m)
-l2 = 0.3        # Distance to counterweight (m)
-lT = 0.3        # Distance to motors (m, assumed same as l1)
-d = 0.1         # Motor separation distance from arm axis (m)
+# Lengths
+l1 = 0.247   # m
+l2 = -0.039  # m
+l3x = -0.007  # m
+l3y = -0.007  # m
+l3z = 0.018  # m
+lT = 0.355   # m
+d = 0.12     # m
 
-# Mass and Inertia
-m1 = 1.0        # Mass of body (kg)
-m2 = 1.0        # Mass of counterweight (kg)
+# Masses
+m1 = 0.108862  # kg
+m2 = 0.4717    # kg
+m3 = 0.1905    # kg
 
-# Body Inertia (kg*m^2)
-J1x = 0.1
-J1y = 0.1
-J1z = 0.1
+# Inertias (J = diag(Jx, Jy, Jz))
+J1x = 0.000189   # kg-m^2
+J1y = 0.001953   # kg-m^2
+J1z = 0.001894   # kg-m^2
 
-# Counterweight Inertia (kg*m^2)
-J2x = 0.1
-J2y = 0.1
-J2z = 0.1
+J2x = 0.00231    # kg-m^2
+J2y = 0.003274   # kg-m^2
+J2z = 0.003416   # kg-m^2
 
-# Damping
-b_phi = 0.1     # Roll damping
-b_theta = 0.1   # Pitch damping
-b_psi = 0.1     # Yaw damping
+J3x = 0.0002222  # kg-m^2
+J3y = 0.0001956  # kg-m^2
+J3z = 0.000027   # kg-m^2
 
-# Initial Conditions
+# Damping/Friction (Chapter 3)
+beta = 0.001
+b_phi = beta
+b_theta = beta
+b_psi = beta
+
+# Initial Conditions (Lab H.2)
 phi0 = 0.0
 theta0 = 0.0
 psi0 = 0.0
 phidot0 = 0.0
 thetadot0 = 0.0
 psidot0 = 0.0
-import numpy as np
 
-# g = 
-# ell1 = 
-# ell2 = 
-# ell3x = 
-# ell3y = 
-# ell3z = 
-# ellT = 
-# d = 
-# m1 = 
-# J1x = 
-# J1y = 
-# J1z = 
-# m2 = 
-# J2x = 
-# J2y = 
-# J2z = 
-# m3 = 
-# J3x = 
-# J3y = 
-# J3z = 
+# Simulation parameters
+t_start = 0.0
+t_end = 50.0
+ts = 0.01
 
+# Aliases
+ell1 = l1
+ell2 = l2
+ell3x = l3x
+ell3y = l3y
+ell3z = l3z
+ellT = lT
 
 ##### Chapter 4
-# mixing matrices (see end of Chapter 4 in lab manual)
-# mixing is a UAV term for taking body forces/torques to individual motor forces
+# Mixing matrices (see end of Chapter 4 in lab manual)
+# Mixing is a UAV term for taking body forces/torques to individual motor forces
 unmixer = np.array([[1.0, 1.0], [d, -d]])  # [F, tau] = unmixer @ [fl, fr]
 mixer = np.linalg.inv(unmixer)  # [fl, fr] = mixer @ [F, tau]
 
