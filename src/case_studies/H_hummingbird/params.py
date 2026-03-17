@@ -115,3 +115,8 @@ C_lat = np.array([[1.0, 0.0, 0.0, 0.0],
 D_lat = np.array([[0.0],
                   [0.0]])
 
+##### Chapter 7: PD Tuning Parameters
+tr = 1.0
+zeta = 0.707
+sigma = 0.05
+
