@@ -14,7 +14,21 @@ zdot0 = 0.0
 ts = 0.01
 
 # Input constraint
-F_max = 100.0
+force_max = 100.0
+
+##### Chapter 4 / 11-14
+# Linearization/equilibrium point
+x_eq = np.array([z0, zdot0])
+u_eq = np.array([0.0])
+r_eq = np.array([z0])
+
+##### Chapter 6 / 11-14
+# State space
+A = np.array([[0.0, 1.0], [-k/m, -b/m]])
+B = np.array([[0.0, 1/m]]).T
+Cm = np.array([[1.0, 0.0]])  # measure position
+Cr = Cm
+D = np.array([[0.0]])
 
 class Params:
 	"""Minimal params for animation only."""

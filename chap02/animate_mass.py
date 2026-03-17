@@ -2,35 +2,32 @@ import numpy as np
 import os
 import sys
 
+# Ensure src is in the path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 from case_studies import D_mass, common
 
-# initialize signals for generating data
-z_gen = common.SignalGenerator(amplitude=1.0, frequency=0.5)
-u_gen = common.SignalGenerator(amplitude=2.0, frequency=0.3)
+# Initialize signals for generating data: z(t) = A*sin(2*pi*f*t) + Y
+z_gen = common.SignalGenerator(amplitude=1.5, frequency=0.1, y_offset=2.0)
+u_gen = common.SignalGenerator(amplitude=10.0, frequency=0.2)
 
+# Time parameters
+ts = 0.02
+time = np.arange(start=0, stop=10, step=ts, dtype=np.float64)
 
-# initialize data storage
-x0 = np.zeros(2)
-x_hist = [x0]
+# Generate trajectory data
+x_hist = []
 u_hist = []
-
-# loop over time
-time = np.arange(start=0, stop=10, step=0.02, dtype=np.float64)
-for t in time[1:]:
-    # generate fake state and input data
-    x = np.empty(2)
-    x[0] = z_gen.sin(t)
-    x[1] = 0.0  # z_dot (dummy)
-    u = np.array([u_gen.sawtooth(t)])
-    # store data for visualization
+for t in time:
+    # Generalized coordinate: z
+    x = np.array([z_gen.sin(t), 0.0]) # [z, z_dot]
     x_hist.append(x)
-    u_hist.append(u)
+    if t < time[-1]:
+        u_hist.append(np.array([u_gen.sin(t)]))
 
-# convert data to numpy arrays
+# Convert to numpy arrays
 x_hist = np.array(x_hist)
 u_hist = np.array(u_hist)
 
-# visualize generated data
+# Visualize
 viz = D_mass.Visualizer(time, x_hist, u_hist)
 viz.animate()

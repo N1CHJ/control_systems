@@ -1,42 +1,35 @@
+import numpy as np
 import os
 import sys
 
-import numpy as np
-
+# Ensure src is in the path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
-
-
 from case_studies import E_blockbeam, common
 
-# initialize signals for generating data
-z_gen = common.SignalGenerator(amplitude=0.5, frequency=0.3)
-th_gen = common.SignalGenerator(amplitude=0.2, frequency=0.7)
-u_gen = common.SignalGenerator(amplitude=1.0, frequency=0.5)
+# Initialize signals: z(t) and theta(t)
+# Beam length is 1.5m; center the block at 0.75m
+z_gen = common.SignalGenerator(amplitude=0.5, frequency=0.1, y_offset=0.75)
+theta_gen = common.SignalGenerator(amplitude=np.radians(15), frequency=0.05, y_offset=0.0)
+u_gen = common.SignalGenerator(amplitude=2.0, frequency=0.2)
 
+# Time parameters
+ts = 0.02
+time = np.arange(start=0, stop=10, step=ts, dtype=np.float64)
 
-# initialize data storage
-x0 = np.zeros(4)
-x_hist = [x0]
+# Generate trajectory data
+x_hist = []
 u_hist = []
-
-# loop over time
-time = np.arange(start=0, stop=10, step=0.02, dtype=np.float64)
-for t in time[1:]:
-    # generate fake state and input data
-    x = np.empty(4)
-    x[0] = z_gen.sin(t)
-    x[1] = th_gen.sin(t)
-    x[2] = 0.0  # z_dot (dummy)
-    x[3] = 0.0  # th_dot (dummy)
-    u = np.array([u_gen.sawtooth(t)])
-    # store data for visualization
+for t in time:
+    # Generalized coordinates: [z, theta]
+    x = np.array([z_gen.sin(t), theta_gen.sin(t), 0.0, 0.0]) # [z, theta, z_dot, theta_dot]
     x_hist.append(x)
-    u_hist.append(u)
+    if t < time[-1]:
+        u_hist.append(np.array([u_gen.sin(t)]))
 
-# convert data to numpy arrays
+# Convert to numpy arrays
 x_hist = np.array(x_hist)
 u_hist = np.array(u_hist)
 
-# visualize generated data
+# Visualize
 viz = E_blockbeam.Visualizer(time, x_hist, u_hist)
 viz.animate()

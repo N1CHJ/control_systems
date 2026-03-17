@@ -151,7 +151,8 @@ su.printsym(eom_eq)
 # TODO Now solve for F_e from the remaining equation (theta equation)
 # Hint: Use sp.solve(eom_eq, F_eq) to solve for F_e
 # BEGIN SOLUTION
-F_eq_expr = sp.solve(eom_eq, F_eq)[0]
+F_eq_sol = sp.solve(eom_eq, F_eq)
+F_eq_expr = F_eq_sol[F_eq] if isinstance(F_eq_sol, dict) else F_eq_sol[0]
 # END SOLUTION
 
 F_eq_expr = sp.factor(F_eq_expr)  # factors out g

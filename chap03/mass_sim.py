@@ -1,41 +1,40 @@
-
+import numpy as np
 import os
 import sys
 
-import numpy as np
-
-# Add the parent directory to sys.path to enable importing from src
+# Add src to path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
-
 from case_studies import D_mass, common
 
-# initialize system
+# Initialize signals
+force_gen = common.SignalGenerator(amplitude=10.0, frequency=1.0)
+
+# Initialize dynamics
 mass = D_mass.Dynamics()
 
-# force = signalGenerator(amplitude=10.0, frequency=1)
-force = common.SignalGenerator(amplitude=10.0, frequency=1.0)
+# Simulation loop
+ts = 0.01
+t_final = 10.0
+time = np.arange(0, t_final, ts)
 
-# initialize data storage
-x_hist = [mass.state]
+t_hist = []
+x_hist = []
 u_hist = []
 
-# loop over time
-time = np.arange(start=0.0, stop=50.0, step=D_mass.params.ts, dtype=np.float64)
-for t in time[1:]:
-    # generate input signal
-    u = np.array([force.sin(t)])
+x = np.array([D_mass.params.z0, D_mass.params.zdot0])
 
-    # simulate system response
-    y = mass.update(u)
-
-    # store data
+for t in time:
+    # Get input
+    u = np.array([force_gen.sin(t)])
+    
+    # Store data
+    t_hist.append(t)
+    x_hist.append(x.copy())
     u_hist.append(u)
-    x_hist.append(mass.state)
+    
+    # Propagate dynamics
+    x = mass.update(u)
 
-# convert to numpy arrays
-x_hist = np.array(x_hist)
-u_hist = np.array(u_hist)
-
-# visualize
-viz = D_mass.Visualizer(time, x_hist, u_hist)
+# Visualize
+viz = D_mass.Visualizer(np.array(t_hist), np.array(x_hist), np.array(u_hist))
 viz.animate()

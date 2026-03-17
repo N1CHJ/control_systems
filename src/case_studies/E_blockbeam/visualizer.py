@@ -23,7 +23,7 @@ class BlockbeamVisualizer(Visualizer):
         # if "deg" is in the label
         x_labels = [
             "z (m)",
-            r"$\theta$ (deg/s)",
+            r"$\theta$ (deg)",
             r"$\dot{z}$ (m/s)",
             r"$\dot{\theta}$ (rad/s)",
         ]

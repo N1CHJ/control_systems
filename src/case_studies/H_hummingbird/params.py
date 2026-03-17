@@ -88,3 +88,30 @@ J_psi = J1z + J2z + J3z + l1**2 * m1 + l2**2 * m2 + l3x**2 * m3 + l3y**2 * m3
 b_phi = 1.0 / J1x
 a_psi = F_e * lT / J_psi
 
+##### Chapter 5: Transfer Functions
+# P_theta(s) = b_theta / s^2
+# P_phi(s) = b_phi / s^2
+# P_psi(s) = a_psi / s^2  (psi/phi)
+# P_psi_tau(s) = (a_psi * b_phi) / s^4
+
+##### Chapter 6: State Space Matrices
+# Longitudinal State-Space: x_lon = [theta, thetadot]
+A_lon = np.array([[0.0, 1.0], [0.0, 0.0]])
+B_lon = np.array([[0.0], [b_theta]])
+C_lon = np.array([[1.0, 0.0]])
+D_lon = np.array([[0.0]])
+
+# Lateral State-Space: x_lat = [phi, psi, phidot, psidot]
+A_lat = np.array([[0.0, 0.0, 1.0, 0.0],
+                  [0.0, 0.0, 0.0, 1.0],
+                  [0.0, 0.0, 0.0, 0.0],
+                  [a_psi, 0.0, 0.0, 0.0]])
+B_lat = np.array([[0.0],
+                  [0.0],
+                  [b_phi],
+                  [0.0]])
+C_lat = np.array([[1.0, 0.0, 0.0, 0.0],
+                  [0.0, 1.0, 0.0, 0.0]])
+D_lat = np.array([[0.0],
+                  [0.0]])
+
