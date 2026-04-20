@@ -1,3 +1,9 @@
+import os
+import sys
+
+# Add src to path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
+
 # 3rd-party
 import numpy as np
 

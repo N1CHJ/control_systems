@@ -72,28 +72,54 @@ def run_simulation(
         else:
             d_hist.append(input_disturbance)
 
-        y = sys.update(u + input_disturbance)
+        y = sys.update(np.atleast_1d(u) + np.atleast_1d(input_disturbance))
 
         # save data
         x_hist.append(sys.state)
         r_hist.append(r)
-        u_hist.append(u)
+        u_hist.append(np.atleast_1d(u))
 
     # convert data lists to numpy arrays
-    u_hist = np.array(u_hist)
+    # Visualizer expects (num_time_steps, num_elements)
+    
     x_hist = np.array(x_hist)
+    u_hist = np.array(u_hist)
     r_hist = np.array(r_hist, dtype=np.float64)
+
+    # Ensure 2D with time as first dimension
+    if x_hist.ndim == 1: x_hist = x_hist.reshape(-1, 1)
+    if u_hist.ndim == 1: u_hist = u_hist.reshape(-1, 1)
+    if r_hist.ndim == 1: r_hist = r_hist.reshape(-1, 1)
+    
+    # If they are 3D (e.g. (N, 1, 1)), squeeze them to 2D (N, 1)
+    if x_hist.ndim > 2: x_hist = x_hist.squeeze(axis=tuple(range(2, x_hist.ndim)))
+    if u_hist.ndim > 2: u_hist = u_hist.squeeze(axis=tuple(range(2, u_hist.ndim)))
+    if r_hist.ndim > 2: r_hist = r_hist.squeeze(axis=tuple(range(2, r_hist.ndim)))
+    
+    # Handle single element arrays after squeeze
+    if x_hist.ndim == 1: x_hist = x_hist.reshape(-1, 1)
+    if u_hist.ndim == 1: u_hist = u_hist.reshape(-1, 1)
+    if r_hist.ndim == 1: r_hist = r_hist.reshape(-1, 1)
+
     if len(xhat_hist) < 2:
         xhat_hist = None
     else:
         xhat_hist = np.array(xhat_hist, dtype=np.float64)
+        if xhat_hist.ndim > 2: xhat_hist = xhat_hist.squeeze(axis=tuple(range(2, xhat_hist.ndim)))
+        if xhat_hist.ndim == 1: xhat_hist = xhat_hist.reshape(-1, 1)
+
     if len(d_hist) == 0:
         d_hist = None
     else:
         d_hist = np.array(d_hist)
+        if d_hist.ndim > 2: d_hist = d_hist.squeeze(axis=tuple(range(2, d_hist.ndim)))
+        if d_hist.ndim == 1: d_hist = d_hist.reshape(-1, 1)
+
     if len(dhat_hist) == 0:
         dhat_hist = None
     else:
         dhat_hist = np.array(dhat_hist)
+        if dhat_hist.ndim > 2: dhat_hist = dhat_hist.squeeze(axis=tuple(range(2, dhat_hist.ndim)))
+        if dhat_hist.ndim == 1: dhat_hist = dhat_hist.reshape(-1, 1)
 
     return time, x_hist, u_hist, r_hist, xhat_hist, d_hist, dhat_hist
