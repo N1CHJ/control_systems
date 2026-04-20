@@ -9,7 +9,7 @@ import case_studies.H_hummingbird.params as P
 from case_studies import H_hummingbird as H_hub
 from case_studies.common import SignalGenerator
 
-# tr = 1.0, zeta = 0.707. Feel free to adjust.
+# tr = 1.0, zeta = 0.707.
 dynamics = H_hub.Dynamics()
 controller = H_hub.ControllerLonPD(tr=1.0, zeta=0.707, sigma=0.05)
 theta_ref_gen = SignalGenerator(amplitude=np.radians(30), frequency=0.1)
